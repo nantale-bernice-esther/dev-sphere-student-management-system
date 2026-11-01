@@ -1,0 +1,37 @@
+/* assets/css/styles.css
+   Extra styles on top of Tailwind.
+   CENTRALIZE: copy to public/assets/css/ and link it ONCE from layouts/app.blade.php:
+   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}"> */
+
+/* ===== Start: Base page styles ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-family: Inter, system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+body { font-family: Inter, system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; background: #ffffff; color: #0f172a; }
+/* ===== End: Base page styles ===== */
+
+/* ===== Start: Sidebar scrollbar ===== */
+.sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
+.sidebar-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
+.sidebar-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+/* ===== End: Sidebar scrollbar ===== */
+
+/* ===== Start: Sidebar active link border ===== */
+.border-l-3 { border-left-width: 3px; }
+/* ===== End: Sidebar active link border ===== */
+
+/* ===== Start: Header dropdown menu (details/summary) ===== */
+details.menu-dropdown > summary { list-style: none; }
+details.menu-dropdown > summary::-webkit-details-marker { display: none; }
+/* ===== End: Header dropdown menu ===== */
+
+/* ===== Start: Form inputs ===== */
+.input-field { width: 100%; border-radius: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; padding: 0.75rem 1rem; font-size: 0.875rem; transition: border-color 0.15s, box-shadow 0.15s; }
+.input-field:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 1px #2563eb; }
+.input-field::placeholder { color: #94a3b8; }
+.input-field.is-invalid { border-color: #dc2626; } /* add this class when @error('field') is true */
+/* ===== End: Form inputs ===== */
+
+/* ===== Start: Select (dropdown) arrow ===== */
+select.input-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M4.6 6.2L8 9.6l3.4-3.4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2.25rem; }
+/* ===== End: Select (dropdown) arrow ===== */
