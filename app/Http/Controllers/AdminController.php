@@ -18,7 +18,7 @@ class AdminController extends Controller
         $user = Auth::user();
         
         //hasrole
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('administrator')) {
             return view('admin.dashboard');
         } elseif ($user->hasRole('lecturer')) {
             return view('lecturer.dashboard');

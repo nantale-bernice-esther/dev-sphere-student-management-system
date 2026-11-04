@@ -9,8 +9,8 @@ Route::get('/', [AdminController::class, 'home']);
 // Authentication: only logged-in users reach /home, which then sends them to the dashboard for their role
 Route::get('/home', [AdminController::class, 'index'])->middleware('auth')->name('home');
 
-// Authentication + authorization: logged in AND has the admin role (anyone else gets a 403)
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+// Authentication + authorization: logged in AND has the administrator role (anyone else gets a 403)
+Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('administrator.')->group(function () {
     Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
 
     // Admin routes for students, courses and registrations go here
