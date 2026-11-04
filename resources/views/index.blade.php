@@ -62,8 +62,8 @@
  <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">Run student records, courses and registrations from one place</h1>
  <p class="mt-5 text-lg text-slate-600">Administrators, lecturers and students each get their own dashboard, so everyone sees what they need and nothing more.</p>
  <div class="mt-8 flex flex-wrap justify-center gap-3">
- <a href="register.html" class="px-6 py-3 bg-[#2563eb] rounded-lg text-sm font-medium text-white hover:bg-[#1d4ed8]">Create an account</a>
- <a href="login.html" class="px-6 py-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50">Sign in</a>
+ <a href="{{ route('register') }}" class="px-6 py-3 bg-[#2563eb] rounded-lg text-sm font-medium text-white hover:bg-[#1d4ed8]">Create an account</a>
+ <a href="{{ route('login') }}" class="px-6 py-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50">Sign in</a>
  </div>
  </div>
  </section>
