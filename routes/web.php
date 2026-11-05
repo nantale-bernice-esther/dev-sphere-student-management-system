@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
 // Public: anyone can open this page (your existing route)
@@ -29,3 +30,8 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
 
     // Student routes (available courses and own registrations) go here
 });
+Route::get('/students/{student}/courses', [RegistrationController::class, 'studentCourses']);
+Route::get('/courses/{course}/students', [RegistrationController::class, 'courseStudents']);
+
+
+
