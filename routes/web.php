@@ -19,7 +19,7 @@ Route::middleware(['auth', 'role:administrator'])->group(function () {
 
     Route::resource('students', StudentController::class);
     Route::resource('courses', CourseController::class);
-    Route::resource('registrations', RegistrationController::class)->except(['edit', 'update']);
+    Route::resource('registrations', RegistrationController::class)->except(['show', 'edit', 'update']);
 });
 
 // Lecturer Routes
