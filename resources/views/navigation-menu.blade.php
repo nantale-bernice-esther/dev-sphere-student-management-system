@@ -87,10 +87,28 @@
                                 {{ __('Manage Account') }}
                             </div>
 
+
+         {{-- Dashboard --}}
+      @if (Auth::user()->hasRole('administrator'))
+    <x-dropdown-link href="{{ route('administrator.dashboard') }}">
+        {{ __('Dashboard') }}
+    </x-dropdown-link>
+       @elseif (Auth::user()->hasRole('lecturer'))
+    <x-dropdown-link href="{{ route('lecturer.dashboard') }}">
+        {{ __('Dashboard') }}
+    </x-dropdown-link>
+      @elseif (Auth::user()->hasRole('student'))
+    <x-dropdown-link href="{{ route('student.dashboard') }}">
+        {{ __('Dashboard') }}
+    </x-dropdown-link>
+@endif
+
+
                             <x-dropdown-link href="{{ route('profile.show') }}">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
+                            
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                 <x-dropdown-link href="{{ route('api-tokens.index') }}">
                                     {{ __('API Tokens') }}
