@@ -1,37 +1,43 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LecturerCourseController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
-// Public: anyone can open this page (your existing route)
-Route::get('/', [AdminController::class, 'home']);
+// Public homepage
+Route::get('/', [AdminController::class, 'home'])->name('welcome');
 
-// Authentication: only logged-in users reach /home, which then sends them to the dashboard for their role
+// Authentication entry point: redirects to dashboard for user's role
 Route::get('/home', [AdminController::class, 'index'])->middleware('auth')->name('home');
 
-// Authentication + authorization: logged in AND has the administrator role (anyone else gets a 403)
-Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('administrator.')->group(function () {
-    Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
+// Administrator Routes
+Route::middleware(['auth', 'role:administrator'])->group(function () {
+    Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('administrator.dashboard');
 
-    // Admin routes for students, courses and registrations go here
+    Route::resource('students', StudentController::class);
+    Route::resource('courses', CourseController::class);
+    Route::resource('registrations', RegistrationController::class)->except(['edit', 'update']);
 });
 
-// Authentication + authorization: logged in AND has the lecturer role
-Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->name('lecturer.')->group(function () {
-    Route::get('/dashboard', fn () => view('lecturer.dashboard'))->name('dashboard');
-
-    // Lecturer routes (assigned courses and their registered students) go here
+// Lecturer Routes
+Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->group(function () {
+    Route::get('/dashboard', fn () => view('lecturer.dashboard'))->name('lecturer.dashboard');
+    Route::get('/courses', [LecturerCourseController::class, 'index'])->name('lecturer.courses');
+    Route::get('/courses/{course}/students', [LecturerCourseController::class, 'students'])->name('lecturer.course.students');
 });
 
-// Authentication + authorization: logged in AND has the student role
-Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', fn () => view('student.dashboard'))->name('dashboard');
-
-    // Student routes (available courses and own registrations) go here
+// Student Routes
+Route::middleware(['auth', 'role:student'])->prefix('student')->group(function () {
+    Route::get('/dashboard', fn () => view('student.dashboard'))->name('student.dashboard');
+    Route::get('/courses', [RegistrationController::class, 'availableCourses'])->name('student.courses');
+    Route::get('/register', [RegistrationController::class, 'studentRegister'])->name('student.register');
+    Route::post('/register', [RegistrationController::class, 'studentStore'])->name('student.register.store');
+    Route::get('/registrations', [RegistrationController::class, 'studentRegistrations'])->name('student.registrations');
 });
+
+// API / Relationship Verification endpoints
 Route::get('/students/{student}/courses', [RegistrationController::class, 'studentCourses']);
 Route::get('/courses/{course}/students', [RegistrationController::class, 'courseStudents']);
-
-
-
