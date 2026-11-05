@@ -2,6 +2,9 @@
    Extra styles on top of Tailwind.
    CENTRALIZE: copy to public/assets/css/ and link it ONCE from layouts/app.blade.php:
    <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}"> */
+   @tailwind base;
+   @tailwind components;
+  @tailwind utilities;
 
 /* ===== Start: Base page styles ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
