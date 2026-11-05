@@ -25,15 +25,15 @@ class RolePermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'view own registrations']);
 
         // Create roles 
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $lecturer = Role::firstOrCreate(['name' => 'lecturer']);
-        $student = Role::firstOrCreate(['name' => 'student']);
+        $administrator = Role::findOrCreate('administrator', 'web');
+        $lecturer = Role::findOrCreate('lecturer', 'web');
+        $student = Role::findOrCreate('student', 'web');
 
-        //admin permissions
-        $admin->givePermissionTo('manage student');
-        $admin->givePermissionTo('manage courses');
-        $admin->givePermissionTo('manage registrations');
-        $admin->givePermissionTo('manage users');
+        //administrator permissions
+        $administrator->givePermissionTo('manage student');
+        $administrator->givePermissionTo('manage courses');
+        $administrator->givePermissionTo('manage registrations');
+        $administrator->givePermissionTo('manage users');
 
         //lecturer permissions
         $lecturer->givePermissionTo('view assigned courses');

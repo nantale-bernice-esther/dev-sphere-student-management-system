@@ -91,8 +91,8 @@
  <div class="flex items-center gap-3 mb-3">
  <div class="w-10 h-10 shrink-0 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[#2563eb] text-sm font-semibold">AU</div>
  <div class="min-w-0">
- <p class="text-sm font-semibold text-slate-900 truncate">Admin User</p>
- <p class="text-xs text-slate-500 truncate">admin@gmail.com</p>
+ <p class="text-sm font-semibold text-slate-900 truncate">Administrator</p>
+ <p class="text-xs text-slate-500 truncate">administrator@gmail.com</p>
  </div>
  </div>
  <div class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-slate-200">
