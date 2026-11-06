@@ -94,15 +94,52 @@ return redirect()
     public function edit(string $id)
     {
         //
+         // $id is the number in the address. For /students/5/edit, $id is 5.
+    // Find that student, together with their user account (name and email).
+    $student = Student::with('user')->find($id);
+
+    // Open the edit page and give it the student, so the form can be filled in.
+    return view('admin.students.edit', compact('student'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+   public function update(Request $request, string $id)
+{
+    // Find the student being edited, with their user account.
+    $student = Student::with('user')->find($id);
+
+    // Check the submitted data, as in store().
+    // The extra part after the comma means "ignore this student's own row".
+    // Without it, saving without changing the email would fail,
+    // because the email would match... itself.
+    $validated = $request->validate([
+        'student_number' => 'required|unique:students,student_number,' . $student->id,
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email,' . $student->user_id,
+        'programme' => 'required|string',
+        'year_of_study' => 'required|integer|min:1|max:4',
+    ]);
+
+    // The name and email are stored in the users table.
+    $student->user->update([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+    ]);
+
+    // The other details are stored in the students table.
+    $student->update([
+        'student_number' => $validated['student_number'],
+        'programme' => $validated['programme'],
+        'year_of_study' => $validated['year_of_study'],
+    ]);
+
+    // Go back to the list with a success message.
+    return redirect()
+        ->route('administrator.students.index')
+        ->with('success', 'Student updated successfully.');
+}
 
     /**
      * Remove the specified resource from storage.
