@@ -72,7 +72,11 @@
  <!-- Start: Sidebar group - Manage -->
  <div class="space-y-1 mb-5"><p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">Manage</p>
  <!-- Link: Students | show with can('manage students') | href route('students.index') | active when request()->routeIs('students.*') -->
- <a href="students/index.html" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="users" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Students</span></a>
+ {{-- Open the students list where the administrator can view and manage student records. --}}
+<a href="{{ route('administrator.students.index') }}" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3">
+    <i data-lucide="users" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i>
+    <span class="ms-3 text-sm font-medium">Students</span>
+</a>
  <!-- Link: Courses | show with can('manage courses') | href route('courses.index') | active when request()->routeIs('courses.*') -->
  <a href="courses/index.html" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="book-open" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Courses</span></a>
  <!-- Link: Registrations | show with can('manage registrations') | href route('registrations.index') | active when request()->routeIs('registrations.*') -->

@@ -10,7 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
-    protected $fillable = ['user_id', 'student_number', 'programme', 'year_of_study'];
+    protected $fillable = [
+        'user_id', 
+        'student_number',
+         'programme', 
+         'year_of_study'
+         ];
     
     public function user(): BelongsTo
     {

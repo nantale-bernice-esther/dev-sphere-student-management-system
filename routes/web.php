@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RegistrationController;
+//imporrt student controller
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 // Public: anyone can open this page (your existing route)
@@ -15,7 +17,11 @@ Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('admini
     Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
 
     // Admin routes for students, courses and registrations go here
-});
+    //routes for student crud operations
+    Route::resource('students', StudentController::class);
+    
+    
+    });
 
 // Authentication + authorization: logged in AND has the lecturer role
 Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->name('lecturer.')->group(function () {
@@ -23,6 +29,7 @@ Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->name('lecturer
 
     // Lecturer routes (assigned courses and their registered students) go here
 });
+
 
 // Authentication + authorization: logged in AND has the student role
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
