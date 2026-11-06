@@ -144,8 +144,26 @@ return redirect()
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+        public function destroy(string $id)
     {
-        //
+        // Find the student we want to remove, together with their user account.
+        $student = Student::with('user')->findOrFail($id);
+
+        // Keep the user account in a variable, because we delete the student first.
+        $user = $student->user;
+
+        // Delete the student row (students table).
+        $student->delete();
+
+        // Also delete the login account (users table), if it exists.
+        // Otherwise a "ghost" login would be left behind with no student.
+        if ($user) {
+            $user->delete();
+        }
+
+        // Go back to the list and show a success message.
+        return redirect()
+            ->route('administrator.students.index')
+            ->with('success', 'Student deleted successfully.');
     }
 }
