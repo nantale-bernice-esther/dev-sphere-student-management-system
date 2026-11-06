@@ -78,11 +78,16 @@ return redirect()
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+   public function show(string $id)
+{
+    // $id is the number in the address. For /students/5, $id is 5.
+    // Ask the database for the student with that id.
+    // with('user') also brings the name and email, which are stored in the users table.
+    $student = Student::with('user')->find($id);
 
+    // Open the show page and hand it the student to display.
+    return view('admin.students.show', compact('student'));
+}
     /**
      * Show the form for editing the specified resource.
      */
