@@ -5,7 +5,8 @@ use App\Http\Controllers\RegistrationController;
 //imporrt student controller
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
-
+// Import the course controller so the route can find it.
+use App\Http\Controllers\CourseController;
 // Public: anyone can open this page (your existing route)
 Route::get('/', [AdminController::class, 'home']);
 
@@ -19,6 +20,10 @@ Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('admini
     // Admin routes for students, courses and registrations go here
     //routes for student crud operations
     Route::resource('students', StudentController::class);
+
+        // Routes for course CRUD operations (list, add, view, edit, delete).
+    // One line like this creates all 7 routes  same as for students.
+    Route::resource('courses', CourseController::class);
     
     
     });

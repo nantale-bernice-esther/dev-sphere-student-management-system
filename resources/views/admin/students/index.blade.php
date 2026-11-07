@@ -73,10 +73,18 @@
                             <p class="text-sm font-medium">Admin User</p>
                             <p class="text-xs text-slate-500 truncate">admin@mubs.ac.ug</p>
                         </div>
-                        {{-- LARAVEL: Sign out must be a POST form: <form method="POST" action="{{ route('logout') }}"> @csrf <button>Sign out</button> </form> --}}
-                        <a href="../../login.html"
-                            class="flex items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50"><i
-                                data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out</a>
+              {{-- Sign out is a form, not a link. A link can only send GET,
+     and Laravel refuses that for logging out (405 error). --}}
+<form method="POST" action="{{ route('logout') }}">
+    {{-- Security token. Every form needs it. --}}
+    @csrf
+
+    {{-- A button that looks like the old link, because it has the same classes. --}}
+    <button type="submit"
+            class="flex w-full items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50">
+        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out
+    </button>
+</form>
                     </div>
                 </details>
                 <!-- End: Header user menu -->
@@ -111,7 +119,7 @@
                         class="ms-3 text-sm font-medium">Students</span></a>
 
                 {{-- Link: Courses | show with @can('manage courses') | href route('courses.index') | active when request()->routeIs('courses.*') --}}
-                <a href="../courses/index.html"
+                <a href="{{ route('administrator.courses.index') }}"
                     class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i
                         data-lucide="book-open"
                         class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span

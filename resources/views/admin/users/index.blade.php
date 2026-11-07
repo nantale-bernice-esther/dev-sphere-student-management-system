@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<!-- PAGE: Edit course (admin) -->
-<!-- LARAVEL: view resources/views/courses/edit.blade.php  (@include courses/_form.blade.php) | route GET /courses/{course}/edit (courses.edit);  PUT /courses/{course} (courses.update) | controller CourseController@edit and @update | data $course, $lecturers -->
+<!-- PAGE: User access (admin) -->
+<!-- LARAVEL: view resources/views/users/index.blade.php | route GET /users (users.index);  PUT /users/{user} (users.update)  middleware: permission:manage users | controller UserAccessController@index and @update | data $users (with roles), $roles. update uses syncRoles() -->
 <!-- TO CENTRALIZE THIS FILE: keep only the block 'Page content', wrap it in @extends('layouts.app') @section('content') ... @endsection, delete everything else (it lives in the layout and partials) -->
 <html lang="en">
 <head>
  <!-- Start: Head | CENTRALIZE: same on every page except the title -> layouts/app.blade.php (title becomes @yield('title')) -->
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Edit course - Student Management System</title>
+ <title>User access - Student Management System</title>
  <link rel="icon" type="image/svg+xml" href="../../assets/img/logo.svg">
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,8 +57,13 @@
  <p class="text-sm font-medium">Admin User</p>
  <p class="text-xs text-slate-500 truncate">admin@mubs.ac.ug</p>
  </div>
- <!-- LARAVEL: Sign out must be a POST form: <form method="POST" action="{{ route('logout') }}"> @csrf <button>Sign out</button> </form> -->
- <a href="../../login.html" class="flex items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out</a>
+ <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit"
+            class="flex w-full items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50">
+        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out
+    </button>
+</form>
  </div>
  </details>
  <!-- End: Header user menu -->
@@ -79,9 +84,9 @@
  <!-- Start: Sidebar group - Manage -->
  <div class="space-y-1 mb-5"><p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">Manage</p>
  <!-- Link: Students | show with @can('manage students') | href route('students.index') | active when request()->routeIs('students.*') -->
- <a href="../students/index.html" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="users" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Students</span></a>
+ <a href=".{{ route('administrator.students.index') }}" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="users" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Students</span></a>
  <!-- Link: Courses | show with @can('manage courses') | href route('courses.index') | active when request()->routeIs('courses.*') -->
- <a href="index.html" class="sidebar-item border-l-3 border-[#2563eb] bg-blue-50 text-[#2563eb] flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="book-open" class="w-5 h-5 text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Courses</span></a>
+ <a href="{{ route('administrator.courses.index') }}" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="book-open" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Courses</span></a>
  <!-- Link: Registrations | show with @can('manage registrations') | href route('registrations.index') | active when request()->routeIs('registrations.*') -->
  <a href="../registrations/index.html" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="clipboard-list" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">Registrations</span></a>
  </div>
@@ -89,7 +94,7 @@
  <!-- Start: Sidebar group - Access -->
  <div class="space-y-1 mb-5"><p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">Access</p>
  <!-- Link: User access | show with @can('manage users') | href route('users.index') | active when request()->routeIs('users.*') -->
- <a href="../users/index.html" class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="shield-check" class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">User access</span></a>
+ <a href="index.html" class="sidebar-item border-l-3 border-[#2563eb] bg-blue-50 text-[#2563eb] flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i data-lucide="shield-check" class="w-5 h-5 text-[#2563eb] transition-colors"></i><span class="ms-3 text-sm font-medium">User access</span></a>
  </div>
  <!-- End: Sidebar group - Access -->
  </div>
@@ -122,19 +127,16 @@
  <!-- Start: Page content | UNIQUE on every page -> stays in this page's own file (@section('content')); in the layout it is just @yield('content') -->
 
 <!-- Start: Page heading | main button: wrap in @can('manage ...') -->
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6"><div><h1 class="text-2xl font-bold text-slate-900">Edit course</h1></div></div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6"><div><h1 class="text-2xl font-bold text-slate-900">User access</h1><p class="text-slate-500 mt-1">Assign roles to user accounts.</p></div></div>
 <!-- End: Page heading -->
 
-<!-- Start: Form | PROTOTYPE: assets/js/app.js checks the required fields and shows the success or error message when you click the button. LARAVEL: action="{{ route('x.store') }}" method="POST" + @csrf (edit page: route('x.update', $item) + @method('PUT')); create and edit share the fields -> _form.blade.php -->
-<div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm max-w-3xl"><form action="#" method="POST" data-success="Course updated successfully."  novalidate>
-<!-- Start: Form fields | each value: value="{{ old('field', $item->field ?? '') }}" and under each input: @error('field') {{ $message }} @enderror -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-5"><div><label for="code" class="block text-sm font-medium mb-1">Course code</label><input id="code" name="code" type="text" value="BUC3131" placeholder="" data-required class="input-field"></div><div><label for="title" class="block text-sm font-medium mb-1">Title</label><input id="title" name="title" type="text" value="Advanced Web Application Development" placeholder="" data-required class="input-field"></div><div><label for="credit_units" class="block text-sm font-medium mb-1">Credit units</label><input id="credit_units" name="credit_units" type="number" value="4" placeholder="" data-required class="input-field"></div><div><label for="lecturer_id" class="block text-sm font-medium mb-1">Lecturer</label><select id="lecturer_id" name="lecturer_id" data-required class="input-field"><option value="">Select...</option><option value="Dr. Sarah Nakato" selected>Dr. Sarah Nakato</option><option value="Mr. Peter Okello">Mr. Peter Okello</option></select></div></div>
-<!-- End: Form fields -->
-<!-- Start: Form buttons -->
-<div class="mt-6 flex items-center gap-3"><button type="submit" class="px-4 py-2 bg-[#2563eb] rounded-lg text-sm font-medium text-white hover:bg-[#1d4ed8]">Update</button><a href="index.html" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50">Cancel</a></div>
-<!-- End: Form buttons -->
-</form></div>
-<!-- End: Form -->
+<!-- Start: Search box (optional, filters rows while typing, see assets/js/app.js) -->
+<div class="mb-4 max-w-sm"><input type="search" class="input-field" placeholder="Search..." data-filter="#users"></div>
+<!-- End: Search box -->
+
+<!-- Start: Table - users | rows are SAMPLE DATA: keep one <tr> and loop it with @forelse($items as $item) ... @empty ... @endforelse; delete buttons need @csrf + @method('DELETE'); pagination: {{ $items->links() }} -->
+<div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"><div class="overflow-x-auto"><table id="users" class="w-full"><thead><tr class="border-b border-slate-200 bg-slate-50"><th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Name</th><th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Email</th><th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Role</th></tr></thead><tbody><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Admin User</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">admin@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin" selected>Administrator</option><option value="lecturer">Lecturer</option><option value="student">Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Dr. Sarah Nakato</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">sarah.nakato@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer" selected>Lecturer</option><option value="student">Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Mr. Peter Okello</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">peter.okello@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer" selected>Lecturer</option><option value="student">Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Aisha Namuli</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">aisha.namuli@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer">Lecturer</option><option value="student" selected>Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Brian Ssemakula</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">brian.ssemakula@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer">Lecturer</option><option value="student" selected>Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Carol Auma</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">carol.auma@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer">Lecturer</option><option value="student" selected>Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">David Kato</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">david.kato@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer">Lecturer</option><option value="student" selected>Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr><tr class="border-b border-slate-200 hover:bg-slate-50"><td class="py-3 px-4 text-sm">Esther Nabirye</td><td class="py-3 px-4 text-sm"><span class="text-slate-500">esther.nabirye@mubs.ac.ug</span></td><td class="py-3 px-4 text-sm"><form action="#" method="POST" data-success="Role updated successfully." class="flex items-center gap-2"><select name="role" class="input-field !py-1.5 !w-40"><option value="admin">Administrator</option><option value="lecturer">Lecturer</option><option value="student" selected>Student</option></select><button type="submit" class="text-sm text-[#2563eb] hover:underline">Save</button></form></td></tr></tbody></table></div></div>
+<!-- End: Table - users -->
 
  <!-- End: Page content -->
 
