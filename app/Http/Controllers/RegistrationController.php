@@ -160,6 +160,16 @@ return view('admin.registrations.index', compact('registrations'));
      */
     public function destroy(string $id)
     {
-        //
+    
+    // Find the registration the admin wants to remove.
+        $registration = Registration::findOrFail($id);
+
+        // Delete that one row. The student and the course stay.
+        $registration->delete();
+
+        // Go back to the list with a green success message.
+        return redirect()
+            ->route('administrator.registrations.index')
+            ->with('success', 'Registration removed successfully.');
     }
 }

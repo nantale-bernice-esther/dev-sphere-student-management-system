@@ -57,9 +57,18 @@
  <p class="text-sm font-medium">Admin User</p>
  <p class="text-xs text-slate-500 truncate">admin@mubs.ac.ug</p>
  </div>
- {{-- LARAVEL: Sign out must be a POST form: <form method="POST" action="{{ route('logout') }}"> @csrf <button>Sign out</button> </form> --}}
- <a href="../../login.html" class="flex items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out</a>
- </div>
+  {{-- Sign out is a form, not a link. A link can only send GET,
+     and Laravel refuses that for logging out (405 error). --}}
+<form method="POST" action="{{ route('logout') }}">
+    {{-- Security token. Every form needs it. --}}
+    @csrf
+
+    {{-- A button that looks like the old link, because it has the same classes. --}}
+    <button type="submit"
+            class="flex w-full items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50">
+        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out
+    </button>
+</form> </div>
  </details>
  {{-- End: Header user menu --}}
  </div>
@@ -153,6 +162,7 @@
                     <th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Name</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Course</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Semester</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-slate-500">Actions</th>
                 </tr>
             </thead>
 
@@ -177,6 +187,16 @@
 
                         {{-- The semester is saved on the registration itself. --}}
                         <td class="py-3 px-4 text-sm text-slate-700">{{ $registration->semester }}</td>
+                        {{-- REMOVE BUTTON: sends a DELETE request for this one registration, after a confirmation pop-up. --}}
+<td class="py-3 px-4 text-sm">
+    <form action="{{ route('administrator.registrations.destroy', $registration->id) }}"
+          method="POST"
+          onsubmit="return confirm('Remove this registration?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="text-sm text-red-600 hover:underline">Remove</button>
+    </form>
+</td>
                     </tr>
 
                 {{-- EMPTY: this row shows only when there are no registrations yet.

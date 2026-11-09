@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
 // Import the lecturer controller so the routes below can find it.
 use App\Http\Controllers\LecturerController;
+// The controller that prepares the dashboard data for each role.
+use App\Http\Controllers\DashboardController;
+
 // Public: anyone can open this page (your existing route)
 Route::get('/', [AdminController::class, 'home']);
+
 
 // Authentication: only logged-in users reach /home, which then sends them to the dashboard for their role
 Route::get('/home', [AdminController::class, 'index'])->middleware('auth')->name('home');
@@ -42,15 +46,24 @@ Route::resource('registrations', RegistrationController::class)->only(['index', 
 
 // Authentication + authorization: logged in AND has the lecturer role
 Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->name('lecturer.')->group(function () {
-    Route::get('/dashboard', fn () => view('lecturer.dashboard'))->name('dashboard');
+   
+    // Open the lecturer dashboard.
+    // The DashboardController gets the lecturer's courses
+    // and student registration counts from the database.
+    // The dashboard route then displays that information.
+    Route::get('/dashboard', [DashboardController::class, 'lecturer'])
+        ->name('dashboard');
+
 
     // Lecturer routes (assigned courses and their registered students) go here
         // "My courses": the courses assigned to the logged-in lecturer.
-    Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
+    // Display the courses assigned to the logged-in lecturer.
+Route::get('/courses', [LecturerController::class, 'index'])->name('courses');
 
-    // The students registered on one course. {id} is the course number in the address.
-    Route::get('/courses/{id}/students', [LecturerController::class, 'courseStudents'])->name('courses.students');
-});
+// Display students registered for a course assigned to the lecturer.
+Route::get('/courses/{id}/students', [LecturerController::class, 'show'])
+    ->name('courses.students');
+    });
 
 
 // Authentication + authorization: logged in AND has the student role
