@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit student - Student Management System</title>
-    <link rel="icon" type="image/svg+xml" href="../../assets/img/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/logo.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,9 +25,9 @@
         }
     };
     </script>
-    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="../../assets/js/app.js" defer></script>
+    <script src="{{ asset('assets/js/app.js') }}" defer></script>
     {{-- End: Head --}}
 </head>
 
@@ -47,8 +47,8 @@
                         <span class="sr-only">Open sidebar</span>
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </label>
-                    <a href="../dashboard.html" class="flex items-center ms-2 md:me-8">
-                        <img src="../../assets/img/logo.svg" alt="Student Management System" class="h-10 w-10 me-3">
+                    <a href="{{ route('administrator.dashboard') }}" class="flex items-center ms-2 md:me-8">
+                        <img src="{{ asset('assets/img/logo.svg') }}" alt="Student Management System" class="h-10 w-10 me-3">
                         <div class="flex flex-col">
                             <span class="font-semibold text-slate-900 text-base">Student Management System</span>
                             <span class="text-xs text-slate-500">Makerere University Business School</span>
@@ -74,11 +74,18 @@
                             <p class="text-sm font-medium">Admin User</p>
                             <p class="text-xs text-slate-500 truncate">admin@mubs.ac.ug</p>
                         </div>
-                        {{-- LARAVEL: Sign out must be a POST form: <form method="POST" action="{{ route('logout') }}">
-                        @csrf <button>Sign out</button> </form> --}}
-                        <a href="../../login.html"
-                            class="flex items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50"><i
-                                data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out</a>
+                        {{-- Sign out is a form, not a link. A link can only send GET,
+     and Laravel refuses that for logging out (405 error). --}}
+<form method="POST" action="{{ route('logout') }}">
+    {{-- Security token. Every form needs it. --}}
+    @csrf
+
+    {{-- A button that looks like the old link, because it has the same classes. --}}
+    <button type="submit"
+            class="flex w-full items-center px-4 py-2 text-sm text-[#d97706] hover:bg-slate-50">
+        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>Sign out
+    </button>
+</form>
                     </div>
                 </details>
                 {{-- End: Header user menu --}}
@@ -95,7 +102,7 @@
             <div class="space-y-1 mb-5">
                 <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">Main</p>
                 {{-- Link: Dashboard | show with no permission (every role) | href route('dashboard') | active when request()->routeIs('dashboard') --}}
-                <a href="../dashboard.html"
+                <a href="{{ route('administrator.dashboard') }}"
                     class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i
                         data-lucide="layout-dashboard"
                         class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span
@@ -117,7 +124,7 @@
                         class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span
                         class="ms-3 text-sm font-medium">Courses</span></a>
                 {{-- Link: Registrations | show with @can('manage registrations') | href route('registrations.index') | active when request()->routeIs('registrations.*') --}}
-                <a href="../registrations/index.html"
+                <a href="{{ route('administrator.registrations.index') }}"
                     class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"><i
                         data-lucide="clipboard-list"
                         class="w-5 h-5 text-slate-400 group-hover:text-[#2563eb] transition-colors"></i><span

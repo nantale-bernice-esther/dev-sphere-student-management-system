@@ -34,46 +34,73 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //receives info submitted in the form
-        //requred eans must not be empty
-        $validated = $request->validate([
-            //validate checks whether the information meets the rules
+  // STORE: runs when the admin clicks Save on the Add student form.
+// Its job: check the data, then save a new student.
+public function store(Request $request)
+{
+    // Rule check. If a rule fails, Laravel returns to the form with the problems.
+    // Notice there is NO "unique" rule on the email here. A person may already
+    // have an account (they signed up themselves), so we check the email
+    // ourselves in the steps below.
+    $validated = $request->validate([
         'student_number' => 'required|unique:students,student_number',
-        'name' => 'required|string',
-        //the email must not already exist in the database
-        'email' => 'required|email|unique:users,email',
-        'programme' => 'required|string',
-        //year of study must be btn 1 and 4 yrs
-        'year_of_study' => 'required|integer|min:1|max:4',
+        'name'           => 'required|string',
+        'email'          => 'required|email',
+        'programme'      => 'required|string',
+        'year_of_study'  => 'required|integer|min:1|max:4',
     ]);
 
-    //creates user account
-$user = User::create([
-    'name' => $validated['name'],
-    'email' => $validated['email'],
-    //creates a secure random password hash bu currently the form doesnt collect password
-    //so they will need a password reset before logging in
-    'password' => Hash::make(Str::random(40)),
-]);
-//assigns student role
-$user->assignRole('student');
+    // Look in the users table for an account with this email.
+    // first() gives us that user, or nothing if there is none.
+    $user = User::where('email', $validated['email'])->first();
 
-Student::create([
-    'user_id' => $user->id,
-    'student_number' => $validated['student_number'],
-    'programme' => $validated['programme'],
-    'year_of_study' => $validated['year_of_study'],
-]);
+    if ($user) {
+        // An account exists. Is this person already a student?
+        // We look in the students table for a profile linked to this user.
+        if (Student::where('user_id', $user->id)->exists()) {
+            // Go back to the form, keep what was typed, and show an error.
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'A student with this email already exists.']);
+        }
 
-return redirect()
-    ->route('administrator.students.index')
-    //sends a success message
-    ->with('success', 'Student created successfully.');
+        // Is the account an administrator or a lecturer? Those accounts must
+        // not be turned into students by mistake.
+        if ($user->hasAnyRole(['administrator', 'lecturer'])) {
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'This email belongs to a staff account.']);
+        }
 
-
+        // The account is free to use. Make sure it has the student role.
+        // We do NOT change its password or name: the person chose those
+        // themselves when they signed up.
+        $user->assignRole('student');
+    } else {
+        // No account yet, so create one, as before.
+        // The random password means the student must reset it before logging in.
+        $user = User::create([
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make(Str::random(40)),
+        ]);
+        $user->assignRole('student');
     }
+
+    // Save the student profile (number, programme, year) and link it to the
+    // account with user_id. This is the row that was missing for her.
+    Student::create([
+        'user_id'        => $user->id,
+        'student_number' => $validated['student_number'],
+        'programme'      => $validated['programme'],
+        'year_of_study'  => $validated['year_of_study'],
+    ]);
+
+    // Go back to the list with a green success message.
+    return redirect()
+        ->route('administrator.students.index')
+        ->with('success', 'Student created successfully.');
+}
 
     /**
      * Display the specified resource.
@@ -147,23 +174,28 @@ return redirect()
         public function destroy(string $id)
     {
         // Find the student we want to remove, together with their user account.
-        $student = Student::with('user')->findOrFail($id);
+      // Find the student being deleted, together with their user account.
+    $student = Student::with('user')->find($id);
 
-        // Keep the user account in a variable, because we delete the student first.
+    // try means: "attempt this". If the database refuses,
+    // the code inside catch runs instead of the page crashing.
+    try {
+        // A student is saved in two tables, so we remove both:
+        // first the student record, then their login account.
         $user = $student->user;
-
-        // Delete the student row (students table).
         $student->delete();
-
-        // Also delete the login account (users table), if it exists.
-        // Otherwise a "ghost" login would be left behind with no student.
-        if ($user) {
-            $user->delete();
-        }
-
-        // Go back to the list and show a success message.
+        $user->delete();
+    } catch (\Illuminate\Database\QueryException $e) {
+        // The database said no, for example because the student has
+        // registrations. Go back and show a red error message.
         return redirect()
             ->route('administrator.students.index')
-            ->with('success', 'Student deleted successfully.');
+            ->with('error', 'This student cannot be deleted because they have related records.');
+    }
+
+    // It worked. Go back to the list with a green message.
+    return redirect()
+        ->route('administrator.students.index')
+        ->with('success', 'Student deleted successfully.');
     }
 }
