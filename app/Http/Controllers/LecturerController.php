@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-// Import the Course model so we can read courses from the database.
 use App\Models\Course;
+// Import the Course model so we can read courses from the database.
+use Illuminate\Http\Request;
 
 class LecturerController extends Controller
 {
@@ -14,7 +14,6 @@ class LecturerController extends Controller
     // INDEX: shows the courses assigned to the lecturer who is logged in.
     public function index()
     {
-
 
         // auth()->id() is the id of the person logged in right now.
         // where('lecturer_id', ...) keeps only courses assigned to that person.
@@ -49,15 +48,16 @@ class LecturerController extends Controller
      */
     public function show(string $id)
     {
-        //
-         // Find the selected course and retrieve its registered students.
-    $course = Course::with('students.user')->findOrFail($id);
+        // Find the selected course and retrieve its registered students.
+        $course = Course::with('lecturer')->findOrFail($id);
 
-    // Make sure the lecturer can only view students in their own course.
-    abort_unless($course->lecturer_id == auth()->id(), 403);
+        // Make sure the lecturer can only view students in their own course.
+        abort_unless($course->lecturer_id == auth()->id(), 403);
 
-    // Open the course students page and send it the course information.
-    return view('lecturer.course-students', compact('course'));
+        $students = $course->students()->with('user')->paginate(15);
+
+        // Open the course students page and send it the course information.
+        return view('lecturer.course-students', compact('course', 'students'));
     }
 
     /**
