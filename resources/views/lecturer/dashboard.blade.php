@@ -205,12 +205,12 @@
 
             {{-- Display the course code from the database. --}}
             <td class="py-3 px-4 text-sm">
-                {{ $course->course_code }}
+                {{ $course->code }}
             </td>
 
             {{-- Display the course title from the database. --}}
             <td class="py-3 px-4 text-sm">
-                {{ $course->course_name }}
+                {{ $course->title}}
             </td>
 
             {{-- Display the number of students registered for this course. --}}
@@ -221,14 +221,18 @@
             {{-- Provide a link to view students registered for this course. --}}
             <td class="py-3 px-4 text-sm">
 
-                {{-- Pass the selected course ID to the lecturer course-students route. --}}
-                <a href="{{ route('lecturer.courses.students', $course->id) }}"
-                   class="text-[#2563eb]">
+               
+{{-- Pass the selected course ID to the lecturer course-students route. --}}
+<a href="{{ route('lecturer.courses.students', $course->id) }}"
+   class="text-[#2563eb] hover:underline font-medium">
 
-                    {{-- Display the eye icon for opening the course. --}}
-                    <i data-lucide="eye" class="w-4 h-4 inline"></i>
+    {{-- Display the word View to open the selected course. --}}
+    View
 
-                </a>
+</a>
+
+
+               
 
             </td>
 
