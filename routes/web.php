@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\LecturerCourseController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UserAccessController;
 use Illuminate\Support\Facades\Route;
 
 // Public homepage
@@ -20,6 +23,12 @@ Route::middleware(['auth', 'role:administrator'])->group(function () {
     Route::resource('students', StudentController::class);
     Route::resource('courses', CourseController::class);
     Route::resource('registrations', RegistrationController::class)->except(['show', 'edit', 'update']);
+
+    Route::resource('lecturers', LecturerController::class)->except(['show']);
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::put('/roles', [RoleController::class, 'update'])->name('roles.update');
+    Route::get('/users', [UserAccessController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}', [UserAccessController::class, 'update'])->name('users.update');
 });
 
 // Lecturer Routes

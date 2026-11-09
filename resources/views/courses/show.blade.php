@@ -62,7 +62,7 @@
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Name</th>
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Email</th>
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Programme</th>
-                    <th class="py-3 px-4 text-sm font-semibold text-slate-500">Semester</th>
+                    <th class="py-3 px-4 text-sm font-semibold text-slate-500">Registered on</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -72,11 +72,7 @@
                         <td class="py-3 px-4 text-sm text-slate-800">{{ $student->user->name ?? 'N/A' }}</td>
                         <td class="py-3 px-4 text-sm text-slate-500">{{ $student->user->email ?? 'N/A' }}</td>
                         <td class="py-3 px-4 text-sm text-slate-700">{{ $student->programme }}</td>
-                        <td class="py-3 px-4 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                                {{ $student->pivot->semester ?? 'N/A' }}
-                            </span>
-                        </td>
+                        <td class="py-3 px-4 text-sm text-slate-600">{{ $student->pivot->created_at ? \Illuminate\Support\Carbon::parse($student->pivot->created_at)->format('d M Y') : 'N/A' }}</td>
                     </tr>
                 @empty
                     <tr>

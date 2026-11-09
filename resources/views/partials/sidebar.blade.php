@@ -48,6 +48,41 @@
                             <span class="ms-3">Registrations</span>
                         </a>
                     @endif
+
+                    @if (auth()->user()->can('manage lecturers') || auth()->user()->hasRole('administrator'))
+                        @php $isLecturers = request()->routeIs('lecturers.*'); @endphp
+                        <a href="{{ route('lecturers.index') }}"
+                           class="sidebar-item border-l-3 {{ $isLecturers ? 'border-[#2563eb] bg-blue-50 text-[#2563eb]' : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900' }} flex items-center p-2 rounded-lg group text-sm font-medium transition-colors duration-150 pl-3">
+                            <i data-lucide="user-check" class="w-5 h-5 {{ $isLecturers ? 'text-[#2563eb]' : 'text-slate-400 group-hover:text-[#2563eb]' }} transition-colors"></i>
+                            <span class="ms-3">Lecturers</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        <!-- Access Section (Guarded by permissions / role) -->
+        @if (auth()->check() && (auth()->user()->can('manage roles') || auth()->user()->can('manage users') || auth()->user()->hasRole('administrator')))
+            <div>
+                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Access</p>
+                <div class="space-y-1">
+                    @if (auth()->user()->can('manage roles') || auth()->user()->hasRole('administrator'))
+                        @php $isRoles = request()->routeIs('roles.*'); @endphp
+                        <a href="{{ route('roles.index') }}"
+                           class="sidebar-item border-l-3 {{ $isRoles ? 'border-[#2563eb] bg-blue-50 text-[#2563eb]' : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900' }} flex items-center p-2 rounded-lg group text-sm font-medium transition-colors duration-150 pl-3">
+                            <i data-lucide="key" class="w-5 h-5 {{ $isRoles ? 'text-[#2563eb]' : 'text-slate-400 group-hover:text-[#2563eb]' }} transition-colors"></i>
+                            <span class="ms-3">Roles &amp; permissions</span>
+                        </a>
+                    @endif
+
+                    @if (auth()->user()->can('manage users') || auth()->user()->hasRole('administrator'))
+                        @php $isUsers = request()->routeIs('users.*'); @endphp
+                        <a href="{{ route('users.index') }}"
+                           class="sidebar-item border-l-3 {{ $isUsers ? 'border-[#2563eb] bg-blue-50 text-[#2563eb]' : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900' }} flex items-center p-2 rounded-lg group text-sm font-medium transition-colors duration-150 pl-3">
+                            <i data-lucide="shield-check" class="w-5 h-5 {{ $isUsers ? 'text-[#2563eb]' : 'text-slate-400 group-hover:text-[#2563eb]' }} transition-colors"></i>
+                            <span class="ms-3">User access</span>
+                        </a>
+                    @endif
                 </div>
             </div>
         @endif

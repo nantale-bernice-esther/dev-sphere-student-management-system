@@ -65,7 +65,7 @@
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Title</th>
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Credits</th>
                     <th class="py-3 px-4 text-sm font-semibold text-slate-500">Lecturer</th>
-                    <th class="py-3 px-4 text-sm font-semibold text-slate-500">Semester</th>
+                    <th class="py-3 px-4 text-sm font-semibold text-slate-500">Registered on</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -75,11 +75,7 @@
                         <td class="py-3 px-4 text-sm text-slate-800">{{ $course->title }}</td>
                         <td class="py-3 px-4 text-sm text-slate-600">{{ $course->credit_units }} CU</td>
                         <td class="py-3 px-4 text-sm text-slate-600">{{ $course->lecturer->name ?? 'Unassigned' }}</td>
-                        <td class="py-3 px-4 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                                {{ $course->pivot->semester ?? 'N/A' }}
-                            </span>
-                        </td>
+                        <td class="py-3 px-4 text-sm text-slate-600">{{ $course->pivot->created_at ? \Illuminate\Support\Carbon::parse($course->pivot->created_at)->format('d M Y') : 'N/A' }}</td>
                     </tr>
                 @empty
                     <tr>
