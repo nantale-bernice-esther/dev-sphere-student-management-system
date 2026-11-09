@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 // Import the Course model so we can read courses from the database.
 use App\Models\Course;
 
@@ -15,11 +16,10 @@ class LecturerController extends Controller
     public function index()
     {
 
-
         // auth()->id() is the id of the person logged in right now.
         // where('lecturer_id', ...) keeps only courses assigned to that person.
         // withCount('students') counts the registered students for each course.
-        $courses = Course::where('lecturer_id', auth()->id())
+        $courses = Course::where('lecturer_id', Auth::id())
             ->withCount('students')
             ->get();
 
@@ -54,7 +54,7 @@ class LecturerController extends Controller
     $course = Course::with('students.user')->findOrFail($id);
 
     // Make sure the lecturer can only view students in their own course.
-    abort_unless($course->lecturer_id == auth()->id(), 403);
+    abort_unless($course->lecturer_id == Auth::id(), 403);
 
     // Open the course students page and send it the course information.
     return view('lecturer.course-students', compact('course'));

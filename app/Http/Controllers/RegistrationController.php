@@ -11,8 +11,25 @@ use App\Models\Student;
 // "Registration" means when we use it further down.
 use App\Models\Registration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller{
+
+
+    public function studentRegistrations(){
+
+        // Find the student profile belonging to the logged-in user.
+        $student = Student::where('user_id', Auth::id())->firstOrFail();
+
+        // Retrieve only this student's registrations.
+        $registrations = Registration::with('course.lecturer')
+            ->where('student_id', $student->id)
+            ->latest()
+            ->paginate(10);
+
+        // Display the student's registrations.
+        return view('student.registrations', compact('registrations'));
+    }
 
 
 

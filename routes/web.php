@@ -68,9 +68,14 @@ Route::get('/courses/{id}/students', [LecturerController::class, 'show'])
 
 // Authentication + authorization: logged in AND has the student role
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', fn () => view('student.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'student'])->name('dashboard');
 
     // Student routes (available courses and own registrations) go here
+    //Available Courses
+    Route::get('/courses', [CourseController::class, 'studentCourses'])->name('courses');
+    //My Registrations
+    Route::get('/registrations', [RegistrationController::class, 'studentRegistrations'])->name('registrations');
+
 });
 
 

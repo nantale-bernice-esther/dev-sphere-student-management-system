@@ -4,12 +4,14 @@
 namespace App\Http\Controllers;
 // Needed to catch the error when the database refuses a delete.
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 // Import the Course model so we can read courses from the database.
 use App\Models\Course;
 // Import the User model, because a lecturer is a user.
 use App\Models\User;
+use App\Models\Student;
 class CourseController extends Controller
 {
     /**
@@ -153,5 +155,25 @@ class CourseController extends Controller
     return redirect()
         ->route('administrator.courses.index')
         ->with('success', 'Course deleted successfully.');
+    }
+
+    public function studentCourses()
+    {
+        // Find the student currently logged in.
+        $student = Student::where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Get all courses and their lecturers.
+        $courses = Course::with('lecturer')->paginate(10);
+
+        // Get IDs of courses this student has registered for.
+        $registeredIds = $student->courses()
+            ->pluck('courses.id')
+            ->toArray();
+
+        return view('student.courses', compact(
+            'courses',
+            'registeredIds'
+        ));
     }
 }
