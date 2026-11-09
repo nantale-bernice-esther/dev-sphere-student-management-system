@@ -20,22 +20,22 @@ class RegistrationController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('semester', 'like', "%{$search}%")
-                  ->orWhereHas('student', function ($sq) use ($search) {
-                      $sq->where('student_number', 'like', "%{$search}%")
-                         ->orWhereHas('user', function ($uq) use ($search) {
-                             $uq->where('name', 'like', "%{$search}%");
-                         });
-                  })
-                  ->orWhereHas('course', function ($cq) use ($search) {
-                      $cq->where('code', 'like', "%{$search}%")
-                         ->orWhere('title', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('student', function ($sq) use ($search) {
+                        $sq->where('student_number', 'like', "%{$search}%")
+                            ->orWhereHas('user', function ($uq) use ($search) {
+                                $uq->where('name', 'like', "%{$search}%");
+                            });
+                    })
+                    ->orWhereHas('course', function ($cq) use ($search) {
+                        $cq->where('code', 'like', "%{$search}%")
+                            ->orWhere('title', 'like', "%{$search}%");
+                    });
             });
         }
 
         $registrations = $query->latest()->paginate(10)->withQueryString();
 
-        return view('registrations.index', compact('registrations'));
+        return view('admin.registrations.index', compact('registrations'));
     }
 
     /**
@@ -46,7 +46,7 @@ class RegistrationController extends Controller
         $students = Student::with('user')->get();
         $courses = Course::with('lecturer')->orderBy('code')->get();
 
-        return view('registrations.create', compact('students', 'courses'));
+        return view('admin.registrations.create', compact('students', 'courses'));
     }
 
     /**
@@ -72,7 +72,7 @@ class RegistrationController extends Controller
 
         Registration::create($validated);
 
-        return redirect()->route('registrations.index')->with('success', 'Student registered for course successfully.');
+        return redirect()->route('administrator.registrations.index')->with('success', 'Student registered for course successfully.');
     }
 
     /**
@@ -82,7 +82,7 @@ class RegistrationController extends Controller
     {
         $registration->delete();
 
-        return redirect()->route('registrations.index')->with('success', 'Registration removed successfully.');
+        return redirect()->route('administrator.registrations.index')->with('success', 'Registration removed successfully.');
     }
 
     /**
@@ -148,7 +148,9 @@ class RegistrationController extends Controller
     public function studentRegistrations()
     {
         $student = auth()->user()->student;
-        $registrations = $student ? $student->registrations()->with('course.lecturer')->latest()->get() : collect();
+        $registrations = $student
+            ? $student->registrations()->with('course.lecturer')->latest()->paginate(10)
+            : collect();
 
         return view('student.registrations', compact('registrations'));
     }

@@ -2,111 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Course;
+// Import the Course model so we can read courses from the database.
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class LecturerController extends Controller
 {
     /**
-     * Display a listing of lecturers.
+     * Display a listing of the resource.
      */
-    public function index(Request $request)
+    // INDEX: shows the courses assigned to the lecturer who is logged in.
+    public function index()
     {
-        $query = User::role('lecturer')->withCount('courses');
+        // auth()->id() is the id of the person logged in right now.
+        // where('lecturer_id', ...) keeps only courses assigned to that person.
+        // withCount('students') counts the registered students for each course.
+        $courses = Course::where('lecturer_id', auth()->id())
+            ->withCount('students')
+            ->get();
 
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        $lecturers = $query->orderBy('name')->paginate(10)->withQueryString();
-
-        return view('lecturers.index', compact('lecturers'));
+        // Open the lecturer courses page and hand it the courses.
+        return view('lecturer.courses', compact('courses'));
     }
 
     /**
-     * Show the form for creating a new lecturer.
+     * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('lecturers.create');
+        //
     }
 
     /**
-     * Store a newly created lecturer in storage.
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $lecturer = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        $lecturer->assignRole('lecturer');
-
-        return redirect()->route('lecturers.index')->with('success', 'Lecturer created successfully.');
+        //
     }
 
     /**
-     * Show the form for editing the specified lecturer.
+     * Display the specified resource.
      */
-    public function edit(User $lecturer)
+    public function show(string $id)
     {
-        return view('lecturers.edit', compact('lecturer'));
+        // Find the selected course and retrieve its registered students.
+        $course = Course::with('lecturer')->findOrFail($id);
+
+        // Make sure the lecturer can only view students in their own course.
+        abort_unless($course->lecturer_id == auth()->id(), 403);
+
+        $students = $course->students()->with('user')->paginate(15);
+
+        // Open the course students page and send it the course information.
+        return view('lecturer.course-students', compact('course', 'students'));
     }
 
     /**
-     * Update the specified lecturer in storage.
+     * Show the form for editing the specified resource.
      */
-    public function update(Request $request, User $lecturer)
+    public function edit(string $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($lecturer->id),
-            ],
-            'password' => 'nullable|string|min:8',
-        ]);
-
-        $lecturer->name = $validated['name'];
-        $lecturer->email = $validated['email'];
-
-        if (! empty($validated['password'])) {
-            $lecturer->password = Hash::make($validated['password']);
-        }
-
-        $lecturer->save();
-
-        return redirect()->route('lecturers.index')->with('success', 'Lecturer updated successfully.');
+        //
     }
 
     /**
-     * Remove the specified lecturer from storage.
+     * Update the specified resource in storage.
      */
-    public function destroy(User $lecturer)
+    public function update(Request $request, string $id)
     {
-        if ($lecturer->id === auth()->id()) {
-            return redirect()->route('lecturers.index')->with('error', 'You cannot delete your own account.');
-        }
+        //
+    }
 
-        $lecturer->delete();
-
-        return redirect()->route('lecturers.index')->with('success', 'Lecturer deleted successfully.');
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }

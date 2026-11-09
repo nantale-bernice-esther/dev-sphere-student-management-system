@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
@@ -22,17 +24,17 @@ class StudentController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('student_number', 'like', "%{$search}%")
-                  ->orWhere('programme', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($uq) use ($search) {
-                      $uq->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%");
-                  });
+                    ->orWhere('programme', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
             });
         }
 
         $students = $query->latest()->paginate(10)->withQueryString();
 
-        return view('students.index', compact('students'));
+        return view('admin.students.index', compact('students'));
     }
 
     /**
@@ -40,41 +42,61 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('students.create');
+        return view('admin.students.create');
     }
 
     /**
      * Store a newly created student in storage.
      */
+    // STORE: runs when the admin clicks Save on the Add student form.
+    // An email may already belong to an account the person created themselves,
+    // so the checks below reuse that account instead of failing on uniqueness.
     public function store(Request $request)
     {
         $validated = $request->validate([
             'student_number' => 'required|string|max:50|unique:students,student_number',
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'email' => 'required|email',
             'programme' => 'required|string|max:100',
-            'year_of_study' => 'required|integer|min:1|max:5',
-            'password' => 'nullable|string|min:6',
+            'year_of_study' => 'required|integer|min:1|max:4',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $user = User::where('email', $validated['email'])->first();
+
+        if ($user) {
+            if (Student::where('user_id', $user->id)->exists()) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['email' => 'A student with this email already exists.']);
+            }
+
+            if ($user->hasAnyRole(['administrator', 'lecturer'])) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['email' => 'This email belongs to a staff account.']);
+            }
+
+            // The account is free to use; give it the student role without
+            // touching the name or password the person chose at sign-up.
+            $user->assignRole('student');
+        } else {
+            // The random password means the student must reset it before logging in.
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['password'] ?? 'password123'),
+                'password' => Hash::make(Str::random(40)),
             ]);
-
             $user->assignRole('student');
+        }
 
-            Student::create([
-                'user_id' => $user->id,
-                'student_number' => $validated['student_number'],
-                'programme' => $validated['programme'],
-                'year_of_study' => $validated['year_of_study'],
-            ]);
-        });
+        Student::create([
+            'user_id' => $user->id,
+            'student_number' => $validated['student_number'],
+            'programme' => $validated['programme'],
+            'year_of_study' => $validated['year_of_study'],
+        ]);
 
-        return redirect()->route('students.index')->with('success', 'Student created successfully.');
+        return redirect()->route('administrator.students.index')->with('success', 'Student created successfully.');
     }
 
     /**
@@ -84,7 +106,7 @@ class StudentController extends Controller
     {
         $student->load(['user', 'courses.lecturer']);
 
-        return view('students.show', compact('student'));
+        return view('admin.students.show', compact('student'));
     }
 
     /**
@@ -94,7 +116,7 @@ class StudentController extends Controller
     {
         $student->load('user');
 
-        return view('students.edit', compact('student'));
+        return view('admin.students.edit', compact('student'));
     }
 
     /**
@@ -118,7 +140,7 @@ class StudentController extends Controller
                 Rule::unique('users', 'email')->ignore($student->user_id),
             ],
             'programme' => 'required|string|max:100',
-            'year_of_study' => 'required|integer|min:1|max:5',
+            'year_of_study' => 'required|integer|min:1|max:4',
         ]);
 
         DB::transaction(function () use ($validated, $student) {
@@ -134,7 +156,7 @@ class StudentController extends Controller
             ]);
         });
 
-        return redirect()->route('students.index')->with('success', 'Student updated successfully.');
+        return redirect()->route('administrator.students.index')->with('success', 'Student updated successfully.');
     }
 
     /**
@@ -142,14 +164,20 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        DB::transaction(function () use ($student) {
-            $user = $student->user;
-            $student->delete();
-            if ($user) {
-                $user->delete();
-            }
-        });
+        try {
+            DB::transaction(function () use ($student) {
+                $user = $student->user;
+                $student->delete();
+                if ($user) {
+                    $user->delete();
+                }
+            });
+        } catch (QueryException $e) {
+            return redirect()
+                ->route('administrator.students.index')
+                ->with('error', 'This student cannot be deleted because they have related records.');
+        }
 
-        return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
+        return redirect()->route('administrator.students.index')->with('success', 'Student deleted successfully.');
     }
 }

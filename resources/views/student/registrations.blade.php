@@ -55,4 +55,10 @@
         </table>
     </div>
 </div>
+
+@if ($registrations instanceof \Illuminate\Pagination\LengthAwarePaginator)
+    <div class="mt-6">
+        {{ $registrations->links() }}
+    </div>
+@endif
 @endsection
