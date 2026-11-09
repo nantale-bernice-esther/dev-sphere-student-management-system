@@ -7,6 +7,8 @@ use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 // Import the course controller so the route can find it.
 use App\Http\Controllers\CourseController;
+// Import the lecturer controller so the routes below can find it.
+use App\Http\Controllers\LecturerController;
 // Public: anyone can open this page (your existing route)
 Route::get('/', [AdminController::class, 'home']);
 
@@ -43,6 +45,11 @@ Route::middleware(['auth', 'role:lecturer'])->prefix('lecturer')->name('lecturer
     Route::get('/dashboard', fn () => view('lecturer.dashboard'))->name('dashboard');
 
     // Lecturer routes (assigned courses and their registered students) go here
+        // "My courses": the courses assigned to the logged-in lecturer.
+    Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
+
+    // The students registered on one course. {id} is the course number in the address.
+    Route::get('/courses/{id}/students', [LecturerController::class, 'courseStudents'])->name('courses.students');
 });
 
 
@@ -52,8 +59,14 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
 
     // Student routes (available courses and own registrations) go here
 });
-Route::get('/students/{student}/courses', [RegistrationController::class, 'studentCourses']);
-Route::get('/courses/{course}/students', [RegistrationController::class, 'courseStudents']);
 
 
+// These two routes show which courses a student takes and which students
+// take a course (Question 1c). Before, anyone could open them by typing the
+// address, even without logging in. Now only a logged-in administrator can.
+// There is no prefix, so the addresses stay exactly the same as before.
+Route::middleware(['auth', 'role:administrator'])->group(function () {
+    Route::get('/students/{student}/courses', [RegistrationController::class, 'studentCourses']);
+    Route::get('/courses/{course}/students', [RegistrationController::class, 'courseStudents']);
+});
 
