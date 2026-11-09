@@ -24,6 +24,16 @@ Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('admini
         // Routes for course CRUD operations (list, add, view, edit, delete).
     // One line like this creates all 7 routes  same as for students.
     Route::resource('courses', CourseController::class);
+    // Routes for registrations (list, add, delete).
+// Route::resource normally makes 7 routes for one controller.
+// only([...]) keeps just the 4 we need:
+//   index   = show the list
+//   create  = show the empty add form
+//   store   = save the new registration
+//   destroy = delete a registration
+// We leave out edit and update because a registration is never edited:
+// if it is wrong, the admin deletes it and adds a new one.
+Route::resource('registrations', RegistrationController::class)->only(['index', 'create', 'store', 'destroy']);
     
     
     });

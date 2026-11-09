@@ -11,7 +11,7 @@
         <link
             rel="icon"
             type="image/svg+xml"
-            href="../../assets/img/logo.svg"
+            href="{{ asset('assets/img/logo.svg') }}"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,9 +31,9 @@
                 },
             };
         </script>
-        <link rel="stylesheet" href="../../assets/css/styles.css" />
+        <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}" />
         <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="../../assets/js/app.js" defer></script>
+        <script src="{{ asset('assets/js/app.js') }}" defer></script>
         {{-- End: Head --}}
     </head>
     <body class="bg-white text-slate-900 font-sans antialiased min-h-screen">
@@ -60,11 +60,11 @@
                             <i data-lucide="menu" class="w-6 h-6"></i>
                         </label>
                         <a
-                            href="../dashboard.html"
+                            href="{{ route('administrator.dashboard') }}"
                             class="flex items-center ms-2 md:me-8"
                         >
                             <img
-                                src="../../assets/img/logo.svg"
+                                src="{{ asset('assets/img/logo.svg') }}"
                                 alt="Student Management System"
                                 class="h-10 w-10 me-3"
                             />
@@ -147,7 +147,7 @@
                     </p>
                     {{-- Link: Dashboard | show with no permission (every role) | href route('dashboard') | active when request()->routeIs('dashboard') --}}
                     <a
-                        href="../dashboard.html"
+                        href="{{ route('administrator.dashboard') }}"
                         class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"
                         ><i
                             data-lucide="layout-dashboard"
@@ -168,7 +168,7 @@
                     </p>
                     {{-- Link: Students | show with @can('manage students') | href route('students.index') | active when request()->routeIs('students.*') --}}
                     <a
-                        href="../students/index.html"
+                        href="{{ route('administrator.students.index') }}"
                         class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"
                         ><i
                             data-lucide="users"
@@ -180,7 +180,7 @@
                     >
                     {{-- Link: Courses | show with @can('manage courses') | href route('courses.index') | active when request()->routeIs('courses.*') --}}
                     <a
-                        href="index.html"
+                        href="{{ route('administrator.courses.index')}}"
                         class="sidebar-item border-l-3 border-[#2563eb] bg-blue-50 text-[#2563eb] flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"
                         ><i
                             data-lucide="book-open"
@@ -192,7 +192,7 @@
                     >
                     {{-- Link: Registrations | show with @can('manage registrations') | href route('registrations.index') | active when request()->routeIs('registrations.*') --}}
                     <a
-                        href="../registrations/index.html"
+                        href="{{ route('administrator.registrations.index') }}"
                         class="sidebar-item border-l-3 border-transparent text-slate-500 flex items-center p-2 rounded-lg hover:bg-slate-50 hover:text-slate-900 group text-sm transition-all duration-200 pl-3"
                         ><i
                             data-lucide="clipboard-list"
