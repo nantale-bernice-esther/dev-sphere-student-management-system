@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Registration;
+// Import the Course model.
+// We use this model to get course information from the database.
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// Import the Course model.
-// We use this model to get course information from the database.
-use App\Models\Course;
-use App\Models\Student;
-use App\Models\Registration;
-
 class DashboardController extends Controller
 {
-
-
-
-
     /**
      * Display the lecturer dashboard.
      *
@@ -73,47 +68,32 @@ class DashboardController extends Controller
     }
 
     /**
- * Display the student dashboard.
- */
-public function student()
-{
-    // Get the currently logged-in student.
-    $student = Student::where('user_id', Auth::id())
-        ->firstOrFail();
+     * Display the student dashboard.
+     */
+    public function student()
+    {
+        // Get the currently logged-in student.
+        $student = Student::where('user_id', Auth::id())
+            ->firstOrFail();
 
-    // Get the student's registrations.
-    $registrations = Registration::with('course')
-        ->where('student_id', $student->id)
-        ->get();
+        // Get the student's registrations.
+        $registrations = Registration::with('course')
+            ->where('student_id', $student->id)
+            ->get();
 
-    // Count registered courses.
-    $registrationCount = $registrations->count();
+        // Count registered courses.
+        $registrationCount = $registrations->count();
 
-    // Count all available courses.
-    $availableCount = Course::count();
+        // Count all available courses.
+        $availableCount = Course::count();
 
-    return view('student.dashboard', compact(
-        'student',
-        'registrations',
-        'registrationCount',
-        'availableCount'
-    ));
-}
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
+        return view('student.dashboard', compact(
+            'student',
+            'registrations',
+            'registrationCount',
+            'availableCount'
+        ));
+    }
 
     /**
      * Display a listing of the resource.
