@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\User;
 use Illuminate\Http\Request;
-// Import the Course model so we can get the lecturer's courses from the database.
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+// Import the Course model so we can get the lecturer's courses from the database.
+use App\Models\Course;
+
 
 class AdminController extends Controller
 {
@@ -17,32 +18,33 @@ class AdminController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-
-        // hasrole
+        
+        //hasrole
         if ($user->hasRole('administrator')) {
             return view('admin.dashboard');
+        
+} elseif ($user->hasRole('lecturer')) {
 
-        } elseif ($user->hasRole('lecturer')) {
+    // Get the courses assigned to the logged-in lecturer.
+    // Also count the students registered for each course.
+    $assignedCourses = Course::where('lecturer_id', $user->id)
+        ->withCount('students')
+        ->get();
 
-            // Get the courses assigned to the logged-in lecturer.
-            // Also count the students registered for each course.
-            $assignedCourses = Course::where('lecturer_id', $user->id)
-                ->withCount('students')
-                ->get();
+    // Count the total courses assigned to this lecturer.
+    $courseCount = $assignedCourses->count();
 
-            // Count the total courses assigned to this lecturer.
-            $courseCount = $assignedCourses->count();
+    // Count all student registrations across the lecturer's courses.
+    $studentCount = $assignedCourses->sum('students_count');
 
-            // Count all student registrations across the lecturer's courses.
-            $studentCount = $assignedCourses->sum('students_count');
-
-            // Send all dashboard data to the lecturer dashboard.
-            return view('lecturer.dashboard', compact(
-                'assignedCourses',
-                'courseCount',
-                'studentCount'
-            ));
-        } elseif ($user->hasRole('student')) {
+    // Send all dashboard data to the lecturer dashboard.
+    return view('lecturer.dashboard', compact(
+        'assignedCourses',
+        'courseCount',
+        'studentCount'
+    ));
+}
+elseif ($user->hasRole('student')) {
             return view('student.dashboard');
         } else {
             abort(403, 'Unauthorized action.');

@@ -4,7 +4,7 @@ use Laravel\Fortify\Features;
 
 return [
 
-    /* take note: this is the default fortify config file, you can change the redirect path after login/logout here. */
+    /*take note: this is the default fortify config file, you can change the redirect path after login/logout here.*/
     'redirects' => [
         'logout' => '/',
     ],
@@ -78,7 +78,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' => '/home',
 
     /*
     |--------------------------------------------------------------------------

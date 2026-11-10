@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
-use Spatie\Permission\Models\Role;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -33,12 +32,8 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
         ]);
 
-        // Public registration only ever creates students, but the role rows come
-        // from the seeder; skip the assignment when roles have not been seeded.
-        if (Role::where('name', 'student')->exists()) {
-            $user->assignRole('student');
-        }
+$user->assignRole('student');
 
-        return $user;
+return $user;
     }
 }
